@@ -917,3 +917,164 @@ ul { list-style: none; }
     opacity:1;
   }
 }
+/* ═════════ MOBILE PREMIUM OPTIMIZATION ═════════ */
+
+@media (max-width: 768px) {
+
+  .app-container {
+    padding: 14px 12px 30px;
+  }
+
+  .app-header {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .brand__name {
+    font-size: 1.2rem;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  /* HERO SECTION */
+
+  .hero__top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .hero__city {
+    font-size: 1.4rem;
+  }
+
+  .hero__meta {
+    font-size: 0.8rem;
+  }
+
+  .hero__icon {
+    font-size: 3rem;
+  }
+
+  .hero__temp-row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .hero__temp {
+    font-size: 4.2rem;
+    line-height: 1;
+  }
+
+  .hero__temp-details {
+    padding-bottom: 0;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .hero__desc {
+    font-size: 1rem;
+  }
+
+  .hero__feels,
+  .hero__hilo {
+    font-size: 0.82rem;
+  }
+
+  /* METRICS */
+
+  .card--metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .metric {
+    padding: 14px 8px;
+  }
+
+  .metric__value {
+    font-size: 1.1rem;
+  }
+
+  .metric__label {
+    font-size: 0.68rem;
+  }
+
+  /* HOURLY FORECAST */
+
+  .hourly-scroll {
+    gap: 10px;
+  }
+
+  .hourly-item {
+    min-width: 72px;
+    padding: 12px;
+  }
+
+  .hourly-item__icon {
+    font-size: 1.2rem;
+  }
+
+  /* DAILY FORECAST */
+
+  .daily-item {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .daily-item__temps {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .temp-bar-container {
+    flex: 1;
+  }
+
+  /* SEARCH */
+
+  .search-bar__wrapper {
+    padding-left: 12px;
+  }
+
+  .search-bar__input {
+    padding: 10px 8px;
+    font-size: 0.95rem;
+  }
+
+  /* GLASS EFFECT REDUCTION */
+
+  .card,
+  .search-bar__wrapper,
+  .search-results {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* BACKGROUND ORBS */
+
+  .bg-orb--1 {
+    width: 300px;
+    height: 300px;
+  }
+
+  .bg-orb--2 {
+    width: 250px;
+    height: 250px;
+  }
+
+  .bg-orb--3 {
+    width: 180px;
+    height: 180px;
+  }
+}
