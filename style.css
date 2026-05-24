@@ -917,7 +917,6 @@ ul { list-style: none; }
     opacity:1;
   }
 }
-/* ═════════ MOBILE PREMIUM OPTIMIZATION ═════════ */
 
 @media (max-width: 768px) {
 
@@ -939,7 +938,6 @@ ul { list-style: none; }
     border-radius: 22px;
   }
 
-  /* HERO SECTION */
 
   .hero__top {
     flex-direction: column;
@@ -989,7 +987,6 @@ ul { list-style: none; }
     font-size: 0.82rem;
   }
 
-  /* METRICS */
 
   .card--metrics {
     grid-template-columns: repeat(2, 1fr);
@@ -1009,7 +1006,6 @@ ul { list-style: none; }
     font-size: 0.68rem;
   }
 
-  /* HOURLY FORECAST */
 
   .hourly-scroll {
     gap: 10px;
@@ -1024,7 +1020,7 @@ ul { list-style: none; }
     font-size: 1.2rem;
   }
 
-  /* DAILY FORECAST */
+  
 
   .daily-item {
     grid-template-columns: 1fr;
@@ -1041,7 +1037,7 @@ ul { list-style: none; }
     flex: 1;
   }
 
-  /* SEARCH */
+
 
   .search-bar__wrapper {
     padding-left: 12px;
@@ -1052,7 +1048,6 @@ ul { list-style: none; }
     font-size: 0.95rem;
   }
 
-  /* GLASS EFFECT REDUCTION */
 
   .card,
   .search-bar__wrapper,
@@ -1061,7 +1056,7 @@ ul { list-style: none; }
     -webkit-backdrop-filter: blur(14px);
   }
 
-  /* BACKGROUND ORBS */
+ 
 
   .bg-orb--1 {
     width: 300px;
