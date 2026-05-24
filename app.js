@@ -1,16 +1,14 @@
-/* ═══════════════════════════════════════════════════════
-   WeatherVue — Vanilla JS Weather Engine
-   ═══════════════════════════════════════════════════════ */
 
 'use strict';
 
-// ── Constants ──
+   
 const GEO_API = 'https://geocoding-api.open-meteo.com/v1/search';
-const WEATHER_API = 'https://api.open-meteo.com/v1/forecast';
+
+const WEATHER_API =  'https://api.open-meteo.com/v1/forecast';
 const CACHE_KEY = 'weathervue_last_city';
 const DEBOUNCE_MS = 350;
 
-// ── WMO Weather Code Mapping ──
+   
 const WMO_MAP = {
   0:  { desc: 'Clear sky',       icon: '☀️', nightIcon: '🌙', theme: 'clear' },
   1:  { desc: 'Mainly clear',    icon: '🌤️', nightIcon: '🌙', theme: 'clear' },
@@ -35,7 +33,7 @@ const WMO_MAP = {
   99: { desc: 'Heavy t-storm',   icon: '⛈️',  nightIcon: '⛈️', theme: 'storm' },
 };
 
-// Weather theme palettes (CSS custom property overrides)
+   
 const THEME_PALETTES = {
   clear:  { h: 38,  s: '85%', l: '55%', bg1: 'hsl(30, 50%, 12%)',  bg2: 'hsl(38, 45%, 16%)',  bg3: 'hsl(25, 40%, 10%)' },
   cloudy: { h: 220, s: '30%', l: '50%', bg1: 'hsl(220, 20%, 12%)', bg2: 'hsl(225, 18%, 16%)', bg3: 'hsl(215, 15%, 10%)' },
@@ -46,20 +44,20 @@ const THEME_PALETTES = {
   night:  { h: 230, s: '50%', l: '40%', bg1: 'hsl(230, 25%, 6%)',  bg2: 'hsl(235, 22%, 10%)', bg3: 'hsl(225, 20%, 5%)' },
 };
 
-// ── DOM Refs ──
+   
 const $ = (sel) => document.querySelector(sel);
 const dom = {
   searchInput:    $('#search-input'),
   searchResults:  $('#search-results'),
   locateBtn:      $('#locate-btn'),
-  // States
+     
   stateWelcome:   $('#state-welcome'),
   stateLoading:   $('#state-loading'),
   stateError:     $('#state-error'),
   stateNoResults: $('#state-no-results'),
   stateOffline:   $('#state-offline'),
   stateBlocked:   $('#state-location-blocked'),
-  // Dashboard
+     
   dashboard:      $('#weather-dashboard'),
   cityName:       $('#city-name'),
   cityMeta:       $('#city-meta'),
@@ -68,16 +66,16 @@ const dom = {
   weatherDesc:    $('#weather-desc'),
   feelsLike:      $('#feels-like'),
   highLow:        $('#high-low'),
-  // Metrics
+     
   humidity:       $('#humidity-val'),
   wind:           $('#wind-val'),
   uv:             $('#uv-val'),
   pressure:       $('#pressure-val'),
   precip:         $('#precip-val'),
-  // Lists
+     
   hourlyScroll:   $('#hourly-scroll'),
   dailyList:      $('#daily-list'),
-  // Error
+     
   errorTitle:     $('#error-title'),
   errorMessage:   $('#error-message'),
   errorRetry:     $('#error-retry'),
@@ -85,14 +83,14 @@ const dom = {
   bgLayer:        $('#bg-layer'),
 };
 
-// ── State ──
+   
 let lastFetchedLocation = null;
 let searchAbortController = null;
 let selectedResultIndex = -1;
 
-// ══════════════════════════════════════
-// UTILITIES
-// ══════════════════════════════════════
+   
+   
+   
 
 function debounce(fn, ms) {
   let timer;
@@ -126,9 +124,9 @@ function formatDay(isoString, i) {
   return d.toLocaleDateString([], { weekday: 'short' });
 }
 
-// ══════════════════════════════════════
-// UI STATE MANAGEMENT
-// ══════════════════════════════════════
+   
+   
+   
 
 const allStates = [
   dom.stateWelcome, dom.stateLoading, dom.stateError,
@@ -147,9 +145,9 @@ function showError(title, message) {
   showState(dom.stateError);
 }
 
-// ══════════════════════════════════════
-// THEME MANAGEMENT
-// ══════════════════════════════════════
+   
+   
+   
 
 function applyWeatherTheme(themeKey) {
   const palette = THEME_PALETTES[themeKey] || THEME_PALETTES.clear;
@@ -162,9 +160,176 @@ function applyWeatherTheme(themeKey) {
   root.setProperty('--bg-gradient-3', palette.bg3);
 }
 
-// ══════════════════════════════════════
-// API — Geocoding
-// ══════════════════════════════════════
+function renderWeatherEffects(theme){
+
+  const effects =
+    document.getElementById('weather-effects');
+
+  if(!effects) return;
+
+  effects.innerHTML = '';
+
+ 
+
+  if(theme === 'rain'){
+
+    const layer =
+      document.createElement('div');
+
+    layer.className = 'rain-layer';
+
+    for(let i=0;i<140;i++){
+
+      const drop =
+        document.createElement('div');
+
+      drop.className = 'rain-drop';
+
+      drop.style.left =
+        Math.random()*100 + 'vw';
+
+      drop.style.animationDuration =
+        (0.45 + Math.random()*0.35) + 's';
+
+      drop.style.animationDelay =
+        Math.random()*2 + 's';
+
+      drop.style.opacity =
+        0.15 + Math.random()*0.45;
+
+      drop.style.height =
+        40 + Math.random()*120 + 'px';
+
+      layer.appendChild(drop);
+    }
+
+    effects.appendChild(layer);
+  }
+
+
+
+  if(theme === 'cloudy'){
+
+    const cloudLayer =
+      document.createElement('div');
+
+    cloudLayer.className = 'cloud-layer';
+
+    for(let i=0;i<6;i++){
+
+      const cloud =
+        document.createElement('div');
+
+      cloud.className = 'cloud';
+
+      cloud.style.top =
+        (5 + i*10) + '%';
+
+      cloud.style.animationDuration =
+        (40 + i*10) + 's';
+
+      cloud.style.opacity =
+        0.12 + Math.random()*0.15;
+
+      cloudLayer.appendChild(cloud);
+    }
+
+    effects.appendChild(cloudLayer);
+  }
+
+
+
+  if(theme === 'fog'){
+
+    const fog =
+      document.createElement('div');
+
+    fog.className = 'fog';
+
+    effects.appendChild(fog);
+  }
+
+
+
+  if(theme === 'snow'){
+
+    for(let i=0;i<70;i++){
+
+      const snow =
+        document.createElement('div');
+
+      snow.className = 'snowflake';
+
+      snow.innerHTML = '❄';
+
+      snow.style.left =
+        Math.random()*100 + 'vw';
+
+      snow.style.fontSize =
+        (0.6 + Math.random()*1.5) + 'rem';
+
+      snow.style.animationDuration =
+        (6 + Math.random()*8) + 's';
+
+      snow.style.animationDelay =
+        Math.random()*5 + 's';
+
+      effects.appendChild(snow);
+    }
+  }
+
+
+
+  if(theme === 'storm'){
+
+    const lightning =
+      document.createElement('div');
+
+    lightning.className = 'lightning';
+
+    effects.appendChild(lightning);
+
+    const layer =
+      document.createElement('div');
+
+    layer.className = 'rain-layer';
+
+    for(let i=0;i<180;i++){
+
+      const drop =
+        document.createElement('div');
+
+      drop.className = 'rain-drop';
+
+      drop.style.left =
+        Math.random()*100 + 'vw';
+
+      drop.style.animationDuration =
+        (0.35 + Math.random()*0.25) + 's';
+
+      drop.style.height =
+        60 + Math.random()*140 + 'px';
+
+      layer.appendChild(drop);
+    }
+
+    effects.appendChild(layer);
+  }
+
+ 
+
+  if(theme === 'clear'){
+
+    const sun =
+      document.createElement('div');
+
+    sun.className = 'sun-glow';
+
+    effects.appendChild(sun);
+  }
+}
+   
+   
 
 async function searchCities(query) {
   if (!query || query.trim().length < 2) return [];
@@ -184,9 +349,9 @@ async function searchCities(query) {
   }
 }
 
-// ══════════════════════════════════════
-// API — Weather
-// ══════════════════════════════════════
+   
+   
+   
 
 async function fetchWeather(lat, lon) {
   const params = new URLSearchParams({
@@ -203,19 +368,19 @@ async function fetchWeather(lat, lon) {
   return res.json();
 }
 
-// ══════════════════════════════════════
-// RENDERING — Current Weather
-// ══════════════════════════════════════
+   
+   
+   
 
 function renderDashboard(weather, cityInfo) {
   const c = weather.current;
   const isDay = !!c.is_day;
   const wmo = getWMO(c.weather_code, isDay);
 
-  // Theme
+     
   applyWeatherTheme(wmo.theme);
-
-  // Hero
+renderWeatherEffects(wmo.theme);
+     
   dom.cityName.textContent = cityInfo.name;
   const metaParts = [cityInfo.admin1, cityInfo.country].filter(Boolean);
   dom.cityMeta.textContent = metaParts.join(', ');
@@ -224,18 +389,18 @@ function renderDashboard(weather, cityInfo) {
   dom.weatherDesc.textContent = wmo.desc;
   dom.feelsLike.textContent = `Feels like ${round(c.apparent_temperature)}°`;
 
-  // High / Low from daily
+     
   const todayMax = round(weather.daily.temperature_2m_max[0]);
   const todayMin = round(weather.daily.temperature_2m_min[0]);
   dom.highLow.innerHTML = `H: ${todayMax}°&ensp;L: ${todayMin}°`;
 
-  // Metrics
+     
   dom.humidity.textContent = `${c.relative_humidity_2m}%`;
   dom.wind.textContent = `${round(c.wind_speed_10m)} km/h`;
   dom.uv.textContent = weather.daily.uv_index_max[0];
   dom.pressure.textContent = `${round(c.pressure_msl)} hPa`;
 
-  // Current precipitation probability — find closest hour
+     
   const now = new Date();
   const currentHourIdx = findCurrentHourIndex(weather.hourly.time, now);
   const precipProb = currentHourIdx >= 0
@@ -243,18 +408,18 @@ function renderDashboard(weather, cityInfo) {
     : '—';
   dom.precip.textContent = typeof precipProb === 'number' ? `${precipProb}%` : precipProb;
 
-  // Hourly
+     
   renderHourly(weather.hourly, currentHourIdx);
 
-  // Daily
+     
   renderDaily(weather.daily);
 
   showState(dom.dashboard);
 }
 
-// ══════════════════════════════════════
-// RENDERING — Hourly Forecast
-// ══════════════════════════════════════
+   
+   
+   
 
 function findCurrentHourIndex(times, now) {
   const nowMs = now.getTime();
@@ -293,15 +458,15 @@ function renderHourly(hourly, startIdx) {
   dom.hourlyScroll.appendChild(fragment);
 }
 
-// ══════════════════════════════════════
-// RENDERING — 7-Day Forecast
-// ══════════════════════════════════════
+   
+   
+   
 
 function renderDaily(daily) {
   dom.dailyList.innerHTML = '';
   const fragment = document.createDocumentFragment();
 
-  // Find global min/max for bar scaling
+     
   const allMin = Math.min(...daily.temperature_2m_min);
   const allMax = Math.max(...daily.temperature_2m_max);
   const range = allMax - allMin || 1;
@@ -335,9 +500,9 @@ function renderDaily(daily) {
   dom.dailyList.appendChild(fragment);
 }
 
-// ══════════════════════════════════════
-// AUTOCOMPLETE
-// ══════════════════════════════════════
+   
+   
+   
 
 function renderSearchResults(results) {
   dom.searchResults.innerHTML = '';
@@ -375,9 +540,9 @@ function closeAutocomplete() {
   selectedResultIndex = -1;
 }
 
-// ══════════════════════════════════════
-// MAIN FLOW — Select & Fetch
-// ══════════════════════════════════════
+   
+   
+   
 
 async function selectCity(city) {
   closeAutocomplete();
@@ -400,10 +565,10 @@ async function loadWeather(lat, lon, cityInfo) {
   try {
     const weather = await fetchWeather(lat, lon);
     lastFetchedLocation = { lat, lon, cityInfo };
-    // Cache to localStorage
+       
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify({ lat, lon, cityInfo }));
-    } catch { /* storage full, ignore */ }
+    } catch {     }
 
     renderDashboard(weather, cityInfo);
   } catch (err) {
@@ -412,9 +577,9 @@ async function loadWeather(lat, lon, cityInfo) {
   }
 }
 
-// ══════════════════════════════════════
-// GEOLOCATION
-// ══════════════════════════════════════
+   
+   
+   
 
 function requestGeolocation() {
   if (!('geolocation' in navigator)) {
@@ -422,7 +587,7 @@ function requestGeolocation() {
     return;
   }
 
-  // Don't show loading if we have cached data already visible
+     
   if (dom.dashboard.classList.contains('hidden')) {
     showState(dom.stateLoading);
   }
@@ -430,11 +595,11 @@ function requestGeolocation() {
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
       const { latitude, longitude } = pos.coords;
-      // Reverse-lookup city name from geocoding (approximate)
+         
       try {
         const res = await fetch(`${GEO_API}?name=&count=1&language=en&format=json`);
-        // Open-Meteo doesn't have reverse geocoding, so we'll just show coordinates
-      } catch { /* ignore */ }
+           
+      } catch {     }
 
       await loadWeather(latitude, longitude, {
         name: 'Your Location',
@@ -444,7 +609,7 @@ function requestGeolocation() {
     },
     (err) => {
       console.warn('Geolocation error:', err.message);
-      // Only show blocked state if no cached data
+         
       const cached = loadFromCache();
       if (!cached) {
         showState(dom.stateBlocked);
@@ -454,9 +619,9 @@ function requestGeolocation() {
   );
 }
 
-// ══════════════════════════════════════
-// CACHE
-// ══════════════════════════════════════
+   
+   
+   
 
 function loadFromCache() {
   try {
@@ -467,15 +632,15 @@ function loadFromCache() {
       loadWeather(data.lat, data.lon, data.cityInfo);
       return true;
     }
-  } catch { /* corrupted cache, ignore */ }
+  } catch {     }
   return null;
 }
 
-// ══════════════════════════════════════
-// EVENT LISTENERS
-// ══════════════════════════════════════
+   
+   
+   
 
-// Debounced search
+   
 let cachedResults = [];
 const handleSearchInput = debounce(async (e) => {
   const query = e.target.value.trim();
@@ -490,7 +655,7 @@ const handleSearchInput = debounce(async (e) => {
     cachedResults = results;
     if (results.length === 0 && query.length >= 2) {
       closeAutocomplete();
-      // Don't switch to no-results state for autocomplete, just show empty dropdown
+         
     } else {
       renderSearchResults(results);
     }
@@ -503,7 +668,7 @@ const handleSearchInput = debounce(async (e) => {
 
 dom.searchInput.addEventListener('input', handleSearchInput);
 
-// Keyboard navigation for autocomplete
+   
 dom.searchInput.addEventListener('keydown', (e) => {
   const items = dom.searchResults.querySelectorAll('.search-results__item');
   if (!items.length) return;
@@ -537,19 +702,19 @@ function updateSelectedResult(items) {
   }
 }
 
-// Close autocomplete on outside click
+   
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-bar')) {
     closeAutocomplete();
   }
 });
 
-// Locate button
+   
 dom.locateBtn.addEventListener('click', () => {
   requestGeolocation();
 });
 
-// Retry buttons
+   
 dom.errorRetry.addEventListener('click', () => {
   if (lastFetchedLocation) {
     loadWeather(lastFetchedLocation.lat, lastFetchedLocation.lon, lastFetchedLocation.cityInfo);
@@ -568,7 +733,7 @@ dom.offlineRetry.addEventListener('click', () => {
   }
 });
 
-// Online / Offline detection
+   
 window.addEventListener('online', () => {
   if (dom.stateOffline && !dom.stateOffline.classList.contains('hidden')) {
     if (lastFetchedLocation) {
@@ -580,31 +745,31 @@ window.addEventListener('online', () => {
 });
 
 window.addEventListener('offline', () => {
-  // Only interrupt if we're trying to do something
+     
   if (!dom.stateLoading.classList.contains('hidden')) {
     showState(dom.stateOffline);
   }
 });
 
-// Prevent form submission
+   
 $('#search-form').addEventListener('submit', (e) => {
   e.preventDefault();
-  // Trigger search on Enter if no autocomplete selection
+     
   const query = dom.searchInput.value.trim();
   if (query.length >= 2 && cachedResults.length > 0) {
     selectCity(cachedResults[0]);
   }
 });
 
-// ══════════════════════════════════════
-// INITIALIZATION
-// ══════════════════════════════════════
+   
+   
+   
 
 (function init() {
-  // 1. Try loading from cache for instant display
+     
   const hasCache = loadFromCache();
 
-  // 2. Also try geolocation (will update if successful)
+     
   if (!hasCache) {
     requestGeolocation();
   }
